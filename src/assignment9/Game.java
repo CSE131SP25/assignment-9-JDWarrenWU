@@ -5,6 +5,12 @@ import java.awt.event.KeyEvent;
 import edu.princeton.cs.introcs.StdDraw;
 
 public class Game {
+	Snake snake = new Snake();
+	Food food = new Food(true);
+	Food badFood = new Food(false);
+	
+	private int score = 0;
+	
 	
 	public Game() {
 		StdDraw.enableDoubleBuffering();
@@ -12,8 +18,8 @@ public class Game {
 		//FIXME - construct new Snake and Food objects
 	}
 	
-	public void play() {
-		while (true) { //TODO: Update this condition to check if snake is in bounds
+	public void play() { 
+		while (snake.isInbounds()) { //keep playing if snake doesnt die
 			int dir = getKeypress();
 			//Testing only: you will eventually need to do more work here
 			System.out.println("Keypress: " + dir);
@@ -24,6 +30,22 @@ public class Game {
 			 * 3. If the food has been eaten, make a new one
 			 * 4. Update the drawing
 			 */
+			snake.changeDirection(dir);
+			snake.move();
+			if(snake.eatFood(food)) //new food
+			{
+				food = new Food(true);
+				score++;
+			}
+			
+			if (snake.eatFood(badFood)) 
+			{
+				badFood = new Food(false);
+				score--; // or snake dies, or shrinks, etc.
+			}
+			
+			updateDrawing();
+			
 		}
 	}
 	
@@ -46,6 +68,17 @@ public class Game {
 	 */
 	private void updateDrawing() {
 		//FIXME
+		StdDraw.clear();
+		snake.draw();
+		food.draw();
+		badFood.draw();
+		
+		//draw score
+		StdDraw.setPenColor(StdDraw.BLUE);
+		StdDraw.textLeft(0.02, 0.98, "Score: " + score);
+		StdDraw.pause(50);
+		StdDraw.show();
+		
 		
 		/*
 		 * 1. Clear screen

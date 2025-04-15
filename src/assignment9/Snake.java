@@ -12,6 +12,9 @@ public class Snake {
 	
 	public Snake() {
 		//FIXME - set up the segments instance variable
+		BodySegment initialSegment = new BodySegment(0.5, 0.5, SEGMENT_SIZE);
+		segments = new LinkedList<>();
+		segments.add(initialSegment);
 		deltaX = 0;
 		deltaY = 0;
 	}
@@ -36,7 +39,20 @@ public class Snake {
 	 * Moves the snake by updating the position of each of the segments
 	 * based on the current direction of travel
 	 */
-	public void move() {
+	public void move() { //it basically just puts a new head down in front and deletes the last segment each move
+		//get the current position of the head
+		BodySegment head = segments.getFirst();
+		double currentHeadX = head.getX();
+		double currentHeadY = head.getY();
+		
+		//move the head
+		double newHeadX = currentHeadX + deltaX;
+		double newHeadY = currentHeadY + deltaY;
+		
+		//add the new segment to the front of the segments list
+		BodySegment newSegment = new BodySegment(newHeadX, newHeadY, SEGMENT_SIZE);
+		segments.addFirst(newSegment);
+		segments.removeLast(); //keep it the same length
 		//FIXME
 	}
 	
@@ -44,6 +60,10 @@ public class Snake {
 	 * Draws the snake by drawing each segment
 	 */
 	public void draw() {
+		for(BodySegment segment : segments)
+		{
+			segment.draw();
+		}
 		//FIXME
 	}
 	
@@ -53,6 +73,17 @@ public class Snake {
 	 * @return true if the snake successfully ate the food
 	 */
 	public boolean eatFood(Food f) {
+		BodySegment head = segments.getFirst();
+		if(Math.abs(head.getX() - f.getX()) < SEGMENT_SIZE && Math.abs(head.getY() - f.getY()) < SEGMENT_SIZE)
+		{
+			//make new segment
+			BodySegment tail = segments.getLast();
+			BodySegment newSegment = new BodySegment (tail.getX(), tail.getY(), SEGMENT_SIZE);
+			//add the segment to the list
+			segments.addLast(newSegment);
+			//return true to show the segment has been eaten
+			return true;
+		}
 		//FIXME
 		return false;
 	}
@@ -62,7 +93,11 @@ public class Snake {
 	 * @return whether or not the head is in the bounds of the window
 	 */
 	public boolean isInbounds() {
-		//FIXME
-		return true;
+		BodySegment head = segments.getFirst();
+		double headX = head.getX();
+		double headY = head.getY();
+		
+		//check if the head is within the bounds of the game window
+		return headX >= 0 && headX <= 1 && headY >= 0 && headX <= 1;
 	}
 }
